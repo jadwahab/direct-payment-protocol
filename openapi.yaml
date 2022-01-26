@@ -9,7 +9,7 @@ info:
     the payment process.
   license:
     name: ISC
-    url: https://tsc.bitcoinassociation.net/standards/invoice_based_payments/
+    url: https://tsc.bitcoinassociation.net_based_payments/
   title: Peer-to-Peer Payment Protocol (P4)
   version: 0.0.1
 paths:
@@ -51,11 +51,11 @@ paths:
               schema:
                 type: string
       summary: Requests the payment terms for a specific payment id (the identifier
-        for a the payment or invoice).
+        for a the payment).
       tags:
         - Payment Terms
     post:
-      description: Creates a payment based on a payment id (the identifier for an payment or invoice).
+      description: Creates a payment based on a payment id (the identifier for an payment).
       parameters:
         - description: Payment ID
           in: path
