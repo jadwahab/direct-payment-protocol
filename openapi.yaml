@@ -15,9 +15,8 @@ info:
 paths:
   "/api/v1/payment/{paymentID}":
     get:
-      description: Requests the payment terms for a specific payment id which includes all the data necessary in order to create the requested payment properly.
-      summary: Requests the payment terms for a specific payment id (the identifier
-        for a the payment).
+      description: Request the payment terms for a specific payment id which includes all the data necessary in order to create the requested payment properly.
+      summary: Request the payment terms for a specific payment id (the identifier for a the payment).
       tags:
         - Payment Terms
       parameters:
@@ -55,8 +54,8 @@ paths:
               schema:
                 type: string
     post:
-      description: Sends a payment based on a payment id (the identifier for an payment) and receives a PaymentACK in response to a successful Payment.
-      summary: A sender will submit an Payment message including the transcation(s) along with other information that is validated before being broadcast to the network.
+      description: Send a payment based on a payment id (the identifier for an payment) and receive a PaymentACK in response to a successful Payment.
+      summary: Submit an Payment message including the transcation(s) along with other information that is validated before being broadcast to the network.
       tags:
         - Payment
       parameters:
