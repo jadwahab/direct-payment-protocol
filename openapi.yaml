@@ -10,13 +10,12 @@ info:
   license:
     name: ISC
     url: https://tsc.bitcoinassociation.net/standards/invoice_based_payments/
-  title: Invoice Based Payments (IBP)
+  title: Peer-to-peer Payment Protocol (P4)
   version: 0.0.1
 paths:
   "/api/v1/payment/{paymentID}":
     get:
-      description: Requests an invoice specified by the payment/invoice id (the identifier
-        for an invoice).
+      description: Requests the payment terms for a specific payment id which includes all the data necessary in order to create the requested payment properly.
       parameters:
         - description: Payment ID
           in: path
@@ -31,7 +30,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ibp.Invoice"
+                $ref: "#/components/schemas/p4.PaymentTerms"
         "400":
           description: returned if the user input is invalid, usually an issue with the
             paymentID
@@ -51,12 +50,12 @@ paths:
             application/json:
               schema:
                 type: string
-      summary: Request to pay an invoice and receive back outputs to use when
-        constructing the payment transaction
+      summary: Requests the payment terms for a specific payment id (the identifier
+        for a the payment or invoice).
       tags:
-        - Invoice
+        - Payment Terms
     post:
-      description: Creates a payment based on a payment id (the identifier for an invoice).
+      description: Creates a payment based on a payment id (the identifier for an payment or invoice).
       parameters:
         - description: Payment ID
           in: path
@@ -68,7 +67,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ibp.Payment"
+              $ref: "#/components/schemas/p4.Payment"
         description: payment message used in BIP270
         required: true
       responses:
@@ -78,7 +77,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ibp.PaymentACK"
+                $ref: "#/components/schemas/p4.PaymentACK"
         "400":
           description: returned if the user input is invalid, usually an issue with the
             paymentID
@@ -106,7 +105,7 @@ servers:
   - url: //localhost:8445
 components:
   schemas:
-    ibp.Invoice:
+    p4.PaymentTerms:
       type: object
       properties:
         network:
@@ -166,17 +165,17 @@ components:
                   description: Address is the merchants store / head office address.
                   example: 1 the street, the town, B1 1AA
                   type: string
-    ibp.Payment:
+    p4.Payment:
       properties:
         mode:
-          description: Selects from dictionary of options within Invoice.requirements
+          description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
         rawTx:
           description: RawTX should be sent if SPVRequired is set to false in the payment
             request.
           type: string
-        ancestors:
-          $ref: "#/components/schemas/bc.ancestors"
+        Ancestors:
+          $ref: "#/components/schemas/bc.Ancestors"
         originator:
           nullable: true
           properties:
@@ -194,7 +193,7 @@ components:
               type: string
           type: object
       type: object
-    ibp.PaymentACK:
+    p4.PaymentACK:
       properties:
         txid:
           type: string
@@ -255,7 +254,7 @@ components:
                 - parents
                 - 2parents
                 - full
-    bc.ancestors:
+    bc.Ancestors:
       nullable: true
       type: object
       properties:
@@ -282,7 +281,7 @@ components:
             type: object
         parents:
           additionalProperties:
-            $ref: "#/components/schemas/bc.ancestors"
+            $ref: "#/components/schemas/bc.Ancestors"
           type: object
         proof:
           properties:
