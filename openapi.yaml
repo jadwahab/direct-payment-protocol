@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   contact: {}
   description: A protocol for communication between a payment host (usually either a
-    merchant, a payment processor, or simply the recipient's wallet) and their
+    beneficiary, a payment processor, or simply the recipient's wallet) and their
     customer (the sender of the funds), enabling both a better customer
     experience, simpler wallet infrastructure, more advanced features such as
     multiple outputs, and better security against man-in-the-middle attacks on
@@ -16,7 +16,7 @@ paths:
   "/api/v1/payment/{paymentID}":
     get:
       description: Request the payment terms for a specific payment id which includes all the data necessary in order to create the requested payment properly.
-      summary: Request the payment terms for a specific payment id (the identifier for a the payment).
+      summary: Request the PaymentTerms message for a specific payment id (the identifier for a the payment).
       tags:
         - Payment Terms
       parameters:
@@ -28,7 +28,7 @@ paths:
             type: string
       responses:
         "201":
-          description: contains outputs, merchant data and expiry information, used by the
+          description: contains outputs, beneficiary data and expiry information, used by the
             payee to construct a transaction
           content:
             application/json:
@@ -123,11 +123,11 @@ components:
           description: ISO timestamp
           example: 2019-10-12T07:20:50.52Z
           type: string
-        paymentUrl:
+        url:
           description: Secure HTTPS location where a Payment message should be sent. Maximum length is 4000 characters
           example: https://localhost:3443/api/v1/payment/123456
           type: string
-        paymentModes:
+        modes:
           description: Determines the mode (or multiple options) which the recipient will accept as payment - must supply at least 1.
           type: object
           properties:
@@ -137,30 +137,30 @@ components:
           nullable: true
           type: string
           description: Open use, likely to be displayed when customer is approving the payment
-        merchantData:
+        beneficiary:
           nullable: true
           type: object
           properties:
             name:
-              description: Name is a human readable string identifying the merchant.
-              example: merchant 1
+              description: Name is a human readable string identifying the beneficiary.
+              example: beneficiary 1
               type: string
             avatar:
-              description: AvatarURL displays a canonical url to a merchants avatar.
+              description: AvatarURL displays a canonical url to a beneficiarys avatar.
               example: http://url.com
               type: string
-            extendedData:
+            extensions:
               additionalProperties: true
-              description: ExtendedData can be supplied if the merchant wishes to send some
+              description: Extensions can be supplied if the beneficiary wishes to send some
                 arbitrary data back to the wallet.
               type: object
               properties:
                 email:
-                  description: Email can be sued to contact the merchant about this transaction.
-                  example: merchant@m.com
+                  description: Email can be sued to contact the beneficiary about this transaction.
+                  example: beneficiary@m.com
                   type: string
                 address:
-                  description: Address is the merchants store / head office address.
+                  description: Address is the beneficiarys store / head office address.
                   example: 1 the street, the town, B1 1AA
                   type: string
     p4.Payment:
@@ -172,8 +172,9 @@ components:
           description: RawTx represents the raw transaction bytes encoded as hexadecimal in a string format.
             request.
           type: string
-        Ancestors:
+        ancestors:
           $ref: "#/components/schemas/bc.Ancestors"
+          nullable: true
         originator:
           nullable: true
           properties:
@@ -201,6 +202,7 @@ components:
           nullable: true
           description: String of raw transaction bytes in hexadecimal format
         peer_channel:
+          nullable: true
           properties:
             host:
               description: peer channel host domain or IP address
@@ -233,8 +235,23 @@ components:
               example: 76a91455b61be43392125d127f1780fb038437cd67ef9c88ac
               type: string
         fees:
-          $ref: "#/components/schemas/bt.FeeQuote"
-        ancestorsArgs:
+          type: object
+          properties:
+            data:
+              type: object
+              properties:
+                satoshis:
+                  type: number
+                bytes:
+                  type: number
+            standard:
+              type: object
+              properties:
+                satoshis:
+                  type: number
+                bytes:
+                  type: number
+        ancestry:
           nullable: true
           description: Determines the ancestors requirements that the receiver is requesting. If omitted, then the ancestors are not requested
           type: object
@@ -245,13 +262,11 @@ components:
               enum:
                 - binary
                 - json
-            contents:
-              type: string
+            minDepth:
+              nullable: true
+              type: integer
               description: Determines the contenst of the ancestors to be sent. For example, the receiver can request only the parent transactions to be sent and no need to go back all the way to the anchors/proofs
-              enum:
-                - parents
-                - 2parents
-                - full
+
     bc.Ancestors:
       nullable: true
       type: object
@@ -304,8 +319,6 @@ components:
           type: string
         txid:
           type: string
-    bt.FeeQuote:
-      type: object
     server.ClientError:
       properties:
         code:
