@@ -10,7 +10,7 @@ info:
   license:
     name: ISC
     url: https://tsc.bitcoinassociation.net/standards/invoice_based_payments/
-  title: Peer-to-peer Payment Protocol (P4)
+  title: Peer-to-Peer Payment Protocol (P4)
   version: 0.0.1
 paths:
   "/api/v1/payment/{paymentID}":
