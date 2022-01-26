@@ -16,6 +16,10 @@ paths:
   "/api/v1/payment/{paymentID}":
     get:
       description: Requests the payment terms for a specific payment id which includes all the data necessary in order to create the requested payment properly.
+      summary: Requests the payment terms for a specific payment id (the identifier
+        for a the payment).
+      tags:
+        - Payment Terms
       parameters:
         - description: Payment ID
           in: path
@@ -32,7 +36,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/p4.PaymentTerms"
         "400":
-          description: returned if the user input is invalid, usually an issue with the
+          description: returned if the sender input is invalid, usually an issue with the
             paymentID
           content:
             application/json:
@@ -50,12 +54,11 @@ paths:
             application/json:
               schema:
                 type: string
-      summary: Requests the payment terms for a specific payment id (the identifier
-        for a the payment).
-      tags:
-        - Payment Terms
     post:
-      description: Creates a payment based on a payment id (the identifier for an payment).
+      description: Sends a payment based on a payment id (the identifier for an payment) and receives a PaymentACK in response to a successful Payment.
+      summary: A sender will submit an Payment message including the transcation(s) along with other information that is validated before being broadcast to the network.
+      tags:
+        - Payment
       parameters:
         - description: Payment ID
           in: path
@@ -79,7 +82,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/p4.PaymentACK"
         "400":
-          description: returned if the user input is invalid, usually an issue with the
+          description: returned if the sender input is invalid, usually an issue with the
             paymentID
           content:
             application/json:
@@ -97,10 +100,6 @@ paths:
             application/json:
               schema:
                 type: string
-      summary: A user will submit an SpvEnvelope along with other information that is
-        validated before being broadcast to the network.
-      tags:
-        - Payment
 servers:
   - url: //localhost:8445
 components:
@@ -170,8 +169,8 @@ components:
         mode:
           description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
-        rawTx:
-          description: RawTX should be sent if SPVRequired is set to false in the payment
+        rawtx:
+          description: RawTx represents the raw transaction bytes encoded as hexadecimal in a string format.
             request.
           type: string
         Ancestors:
