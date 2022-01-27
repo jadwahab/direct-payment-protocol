@@ -132,7 +132,7 @@ components:
           type: object
           properties:
             legacy:
-              $ref: "#/components/schemas/pm.Legacy.Request"
+              $ref: "#/components/schemas/pm.LegacyRequest"
         memo:
           nullable: true
           type: string
@@ -171,7 +171,7 @@ components:
           description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
         legacy:
-          $ref: "#/components/schemas/pm.Legacy.Response"
+          $ref: "#/components/schemas/pm.LegacyResponse"
         originator:
           nullable: true
           type: object
@@ -212,7 +212,7 @@ components:
               type: string
           type: object
 
-    pm.Legacy.Request:
+    pm.LegacyRequest:
       type: object
       properties:
         outputs:
@@ -265,7 +265,7 @@ components:
               type: integer
               description: Determines the contenst of the ancestors to be sent. For example, the receiver can request only the parent transactions to be sent and no need to go back all the way to the anchors/proofs
 
-    pm.Legacy.Response:
+    pm.LegacyResponse:
       type: object
       properties:
         rawtx:
