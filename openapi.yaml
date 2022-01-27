@@ -216,22 +216,24 @@ components:
       type: object
       properties:
         outputs:
-          type: object
-          properties:
-            amount:
-              description: Amount is the number of satoshis to be paid.
-              example: 100000
-              type: integer
-            description:
-              description: Description, an optional description such as "tip" or "sales tax".
-                Maximum length is 100 chars.
-              example: paymentReference 123456
-              type: string
-            script:
-              description: Script is a locking script where payment should be sent, formatted
-                as a hexadecimal string.
-              example: 76a91455b61be43392125d127f1780fb038437cd67ef9c88ac
-              type: string
+          type: array
+          items:
+            properties:
+              amount:
+                description: Amount is the number of satoshis to be paid.
+                example: 100000
+                type: integer
+              script:
+                description: Script is a locking script where payment should be sent, formatted
+                  as a hexadecimal string.
+                example: 76a91455b61be43392125d127f1780fb038437cd67ef9c88ac
+                type: string
+              description:
+                description: Description, an optional description such as "tip" or "sales tax".
+                  Maximum length is 100 chars.
+                example: paymentReference 123456
+                type: string
+                nullable: true
         fees:
           type: object
           properties:
