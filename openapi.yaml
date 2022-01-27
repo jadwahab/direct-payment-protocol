@@ -271,8 +271,7 @@ components:
       type: object
       properties:
         rawtx:
-          description: RawTx represents the raw transaction bytes encoded as hexadecimal in a string format.
-            request.
+          description: The raw transaction bytes encoded as hexadecimal in a string format
           type: string
         txid:
           description: The transaction ID (TxID) of the transaction being sent
@@ -283,9 +282,31 @@ components:
           nullable: true
 
     bc.Ancestors:
+      description: Transaction ancestors as described by the TSC specfication
       nullable: true
       type: object
       properties:
+        rawtx:
+          type: string
+        proof:
+          type: object
+          properties:
+            composite:
+              type: boolean
+            index:
+              type: integer
+            nodes:
+              items:
+                type: string
+              type: array
+            proofType:
+              type: string
+            target:
+              type: string
+            targetType:
+              type: string
+            txOrId:
+              type: string
         mapiResponses:
           type: array
           items:
@@ -311,29 +332,6 @@ components:
           additionalProperties:
             $ref: "#/components/schemas/bc.Ancestors"
           type: object
-        proof:
-          properties:
-            composite:
-              type: boolean
-            index:
-              type: integer
-            nodes:
-              items:
-                type: string
-              type: array
-            proofType:
-              type: string
-            target:
-              type: string
-            targetType:
-              type: string
-            txOrId:
-              type: string
-          type: object
-        rawTx:
-          type: string
-        txid:
-          type: string
 
     server.ClientError:
       properties:
