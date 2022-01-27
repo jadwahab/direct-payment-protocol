@@ -10,7 +10,7 @@ info:
   license:
     name: ISC
     url: https://tsc.bitcoinassociation.net_based_payments/
-  title: Peer-to-Peer Payment Protocol (P4)
+  title: Direct Payment Protocol (DPP)
   version: 0.0.1
 paths:
   "/api/v1/payment/{paymentID}":
@@ -33,7 +33,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/p4.PaymentTerms"
+                $ref: "#/components/schemas/dpp.PaymentTerms"
         "400":
           description: returned if the sender input is invalid, usually an issue with the
             paymentID
@@ -69,7 +69,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/p4.Payment"
+              $ref: "#/components/schemas/dpp.Payment"
         description: payment message used in BIP270
         required: true
       responses:
@@ -79,7 +79,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/p4.PaymentACK"
+                $ref: "#/components/schemas/dpp.PaymentACK"
         "400":
           description: returned if the sender input is invalid, usually an issue with the
             paymentID
@@ -103,7 +103,7 @@ servers:
   - url: //localhost:8445
 components:
   schemas:
-    p4.PaymentTerms:
+    dpp.PaymentTerms:
       type: object
       properties:
         network:
@@ -132,7 +132,7 @@ components:
           type: object
           properties:
             legacy:
-              $ref: "#/components/schemas/pm.Legacy"
+              $ref: "#/components/schemas/pm.Legacy.Request"
         memo:
           nullable: true
           type: string
@@ -163,20 +163,18 @@ components:
                   description: Address is the beneficiarys store / head office address.
                   example: 1 the street, the town, B1 1AA
                   type: string
-    p4.Payment:
+
+    dpp.Payment:
+      type: object
       properties:
         mode:
           description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
-        rawtx:
-          description: RawTx represents the raw transaction bytes encoded as hexadecimal in a string format.
-            request.
-          type: string
-        ancestors:
-          $ref: "#/components/schemas/bc.Ancestors"
-          nullable: true
+        legacy:
+          $ref: "#/components/schemas/pm.Legacy.Response"
         originator:
           nullable: true
+          type: object
           properties:
             name:
               description: legal person making the payment
@@ -190,9 +188,8 @@ components:
               description: url to an image
               nullable: true
               type: string
-          type: object
-      type: object
-    p4.PaymentACK:
+
+    dpp.PaymentACK:
       properties:
         txid:
           type: string
@@ -214,7 +211,8 @@ components:
               description: the identifier of the channel to connect to
               type: string
           type: object
-    pm.Legacy:
+
+    pm.Legacy.Request:
       type: object
       properties:
         outputs:
@@ -266,6 +264,17 @@ components:
               nullable: true
               type: integer
               description: Determines the contenst of the ancestors to be sent. For example, the receiver can request only the parent transactions to be sent and no need to go back all the way to the anchors/proofs
+
+    pm.Legacy.Response:
+      type: object
+      properties:
+        rawtx:
+          description: RawTx represents the raw transaction bytes encoded as hexadecimal in a string format.
+            request.
+          type: string
+        ancestors:
+          $ref: "#/components/schemas/bc.Ancestors"
+          nullable: true
 
     bc.Ancestors:
       nullable: true
@@ -319,6 +328,7 @@ components:
           type: string
         txid:
           type: string
+
     server.ClientError:
       properties:
         code:
