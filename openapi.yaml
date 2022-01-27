@@ -272,6 +272,10 @@ components:
           description: RawTx represents the raw transaction bytes encoded as hexadecimal in a string format.
             request.
           type: string
+        txid:
+          description: The transaction ID (TxID) of the transaction being sent
+          type: string
+          nullable: true
         ancestors:
           $ref: "#/components/schemas/bc.Ancestors"
           nullable: true
