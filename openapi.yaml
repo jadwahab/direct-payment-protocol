@@ -132,9 +132,9 @@ components:
           type: object
           properties:
             legacy:
-              $ref: "#/components/schemas/pm.LegacyRequest"
+              $ref: "#/components/schemas/pm.LegacyPaymentTerms"
             secureLegacy:
-              $ref: "#/components/schemas/pm.SecureLegacyRequest"
+              $ref: "#/components/schemas/pm.SecureLegacyPaymentTerms"
         memo:
           nullable: true
           type: string
@@ -173,9 +173,9 @@ components:
           description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
         legacy:
-          $ref: "#/components/schemas/pm.LegacyResponse"
+          $ref: "#/components/schemas/pm.LegacyPayment"
         secureLegacy:
-          $ref: "#/components/schemas/pm.LegacyResponse"
+          $ref: "#/components/schemas/pm.LegacyPayment"
         originator:
           nullable: true
           type: object
@@ -195,28 +195,31 @@ components:
 
     dpp.PaymentACK:
       properties:
-        txid:
+        mode:
+          description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
-          description: Transaction ID
-        rawtx:
-          type: string
-          nullable: true
-          description: String of raw transaction bytes in hexadecimal format
+        legacy:
+          $ref: "#/components/schemas/pm.LegacyPaymentAck"
+        secureLegacy:
+          $ref: "#/components/schemas/pm.LegacyPaymentAck"
         peer_channel:
           nullable: true
           properties:
             host:
               description: peer channel host domain or IP address
               type: string
+            path:
+              description: peer channel host URL path
+              type: string
             token:
               description: token used to authenticate the connection
               type: string
-            channel_id:
+            id:
               description: the identifier of the channel to connect to
               type: string
           type: object
 
-    pm.LegacyRequest:
+    pm.LegacyPaymentTerms:
       type: object
       properties:
         outputs:
@@ -271,7 +274,7 @@ components:
               type: integer
               description: Determines the contenst of the ancestors to be sent. For example, the receiver can request only the parent transactions to be sent and no need to go back all the way to the anchors/proofs
 
-    pm.SecureLegacyRequest:
+    pm.SecureLegacyPaymentTerms:
       type: object
       properties:
         payload:
@@ -290,7 +293,7 @@ components:
           type: string
           example: application/json
 
-    pm.LegacyResponse:
+    pm.LegacyPayment:
       type: object
       properties:
         rawtx:
@@ -302,6 +305,17 @@ components:
           nullable: true
         ancestors:
           $ref: "#/components/schemas/bc.Ancestors"
+          nullable: true
+
+    pm.LegacyPaymentAck:
+      type: object
+      properties:
+        rawtx:
+          description: The raw transaction bytes encoded as hexadecimal in a string format
+          type: string
+        txid:
+          description: The transaction ID (TxID) of the transaction being sent
+          type: string
           nullable: true
 
     bc.Ancestors:
