@@ -53,6 +53,7 @@ paths:
             application/json:
               schema:
                 type: string
+
     post:
       description: Send a payment based on a payment id (the identifier for an payment) and receive a PaymentACK in response to a successful Payment.
       summary: Submit an Payment message including the transcation(s) along with other information that is validated before being broadcast to the network.
@@ -80,6 +81,47 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/dpp.PaymentACK"
+        "400":
+          description: returned if the sender input is invalid, usually an issue with the
+            paymentID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/server.ClientError"
+        "404":
+          description: returned if the paymentID has not been found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/server.ClientError"
+        "500":
+          description: returned if there is an unexpected internal error
+          content:
+            application/json:
+              schema:
+                type: string
+
+  "/api/v1/payment/sec/{paymentID}":
+    get:
+      description: Securely request the payment terms for a specific payment id which includes all the data necessary in order to create the requested payment properly.
+      summary: Securely request the PaymentTerms message for a specific payment id (the identifier for a the payment) - it will be returned wrapped in a JSON envelope signed by the payment receiver.
+      tags:
+        - Payment Terms
+      parameters:
+        - description: Payment ID
+          in: path
+          name: paymentID
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: contains outputs, beneficiary data and expiry information, used by the
+            payee to construct a transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dpp.SecurePaymentTerms"
         "400":
           description: returned if the sender input is invalid, usually an issue with the
             paymentID
@@ -132,9 +174,7 @@ components:
           type: object
           properties:
             legacy:
-              $ref: "#/components/schemas/pm.LegacyPaymentTerms"
-            secureLegacy:
-              $ref: "#/components/schemas/pm.SecureLegacyPaymentTerms"
+              $ref: "#/components/schemas/pm.Legacy-PaymentTerms"
         memo:
           nullable: true
           type: string
@@ -173,9 +213,7 @@ components:
           description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
         legacy:
-          $ref: "#/components/schemas/pm.LegacyPayment"
-        secureLegacy:
-          $ref: "#/components/schemas/pm.LegacyPayment"
+          $ref: "#/components/schemas/pm.Legacy-Payment"
         originator:
           nullable: true
           type: object
@@ -199,9 +237,7 @@ components:
           description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
         legacy:
-          $ref: "#/components/schemas/pm.LegacyPaymentAck"
-        secureLegacy:
-          $ref: "#/components/schemas/pm.LegacyPaymentAck"
+          $ref: "#/components/schemas/pm.Legacy-PaymentAck"
         peer_channel:
           nullable: true
           properties:
@@ -219,7 +255,26 @@ components:
               type: string
           type: object
 
-    pm.LegacyPaymentTerms:
+    dpp.SecurePaymentTerms:
+      type: object
+      properties:
+        payload:
+          type: string
+          example: '{"network":"mainnet","creationTimestamp":{},"expirationTimestamp":{},"url":"https://localhost:3443/api/v1/payment/123456","memo":"string","beneficiary":{"name":"beneficiary 1","avatar":"http://url.com","extensions":{"email":"beneficiary@m.com","address":"1 the street, the town, B1 1AA","additionalProp1":{}}},"outputs":[{"amount":100000,"script":"76a91455b61be43392125d127f1780fb038437cd67ef9c88ac","description":"paymentReference 123456"}],"fees":{"data":{"satoshis":0,"bytes":0},"standard":{"satoshis":0,"bytes":0}},"ancestry":{"format":"binary","minDepth":0}}'
+        signature:
+          type: string
+          example: 3044022004cf2c5711f34f0de11fd316074c44ce0f63a525840aae0cf61d9dee04b317b102201a56049354449ddce3d8b059403b2d866662b6d1f9d0064365d420406d8d992d
+        publicKey:
+          type: string
+          example: 03d546057437f3279f66d6ae91a03ffe1120ef3a79b8f186d9b6a8f1e0582ccf78
+        encoding:
+          type: string
+          example: UTF-8
+        mimetype:
+          type: string
+          example: application/json
+
+    pm.Legacy-PaymentTerms:
       type: object
       properties:
         outputs:
@@ -274,26 +329,7 @@ components:
               type: integer
               description: Determines the contenst of the ancestors to be sent. For example, the receiver can request only the parent transactions to be sent and no need to go back all the way to the anchors/proofs
 
-    pm.SecureLegacyPaymentTerms:
-      type: object
-      properties:
-        payload:
-          type: string
-          example: '{"network":"mainnet","creationTimestamp":{},"expirationTimestamp":{},"url":"https://localhost:3443/api/v1/payment/123456","memo":"string","beneficiary":{"name":"beneficiary 1","avatar":"http://url.com","extensions":{"email":"beneficiary@m.com","address":"1 the street, the town, B1 1AA","additionalProp1":{}}},"outputs":[{"amount":100000,"script":"76a91455b61be43392125d127f1780fb038437cd67ef9c88ac","description":"paymentReference 123456"}],"fees":{"data":{"satoshis":0,"bytes":0},"standard":{"satoshis":0,"bytes":0}},"ancestry":{"format":"binary","minDepth":0}}'
-        signature:
-          type: string
-          example: 3044022004cf2c5711f34f0de11fd316074c44ce0f63a525840aae0cf61d9dee04b317b102201a56049354449ddce3d8b059403b2d866662b6d1f9d0064365d420406d8d992d
-        publicKey:
-          type: string
-          example: 03d546057437f3279f66d6ae91a03ffe1120ef3a79b8f186d9b6a8f1e0582ccf78
-        encoding:
-          type: string
-          example: UTF-8
-        mimetype:
-          type: string
-          example: application/json
-
-    pm.LegacyPayment:
+    pm.Legacy-Payment:
       type: object
       properties:
         rawtx:
@@ -307,7 +343,7 @@ components:
           $ref: "#/components/schemas/bc.Ancestors"
           nullable: true
 
-    pm.LegacyPaymentAck:
+    pm.Legacy-PaymentAck:
       type: object
       properties:
         rawtx:
