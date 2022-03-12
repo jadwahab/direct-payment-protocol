@@ -173,7 +173,7 @@ components:
           description: Determines the mode (or multiple options) which the recipient will accept as payment - must supply at least 1.
           type: object
           properties:
-            legacy:
+            50a57d5b03d9:
               $ref: "#/components/schemas/pm.Legacy-PaymentTerms"
         memo:
           nullable: true
@@ -212,7 +212,7 @@ components:
         mode:
           description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
-        legacy:
+        50a57d5b03d9:
           $ref: "#/components/schemas/pm.Legacy-Payment"
         originator:
           nullable: true
@@ -236,7 +236,7 @@ components:
         mode:
           description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
-        legacy:
+        50a57d5b03d9:
           $ref: "#/components/schemas/pm.Legacy-PaymentAck"
         peer_channel:
           nullable: true
