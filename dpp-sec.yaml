@@ -13,10 +13,10 @@ info:
   title: Direct Payment Protocol (DPP)
   version: 0.0.1
 paths:
-  "/api/v1/payment/{paymentID}":
+  "/api/v1/payment/sec/{paymentID}":
     get:
-      description: Request the payment terms for a specific payment id which includes all the data necessary in order to create the requested payment properly.
-      summary: Request the PaymentTerms message for a specific payment id (the identifier for a the payment).
+      description: Securely request the payment terms for a specific payment id which includes all the data necessary in order to create the requested payment properly.
+      summary: Securely request the PaymentTerms message for a specific payment id (the identifier for a the payment) - it will be returned wrapped in a JSON envelope signed by the payment receiver.
       tags:
         - Payment Terms
       parameters:
@@ -27,13 +27,20 @@ paths:
           schema:
             type: string
       responses:
-        "200":
+        "201":
           description: contains outputs, beneficiary data and expiry information, used by the
             payee to construct a transaction
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/dpp.PaymentTerms"
+                $ref: "#/components/schemas/dpp.SecurePaymentTerms"
+        "400":
+          description: returned if the sender input is invalid, usually an issue with the
+            paymentID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/server.ClientError"
         "404":
           description: returned if the paymentID has not been found
           content:
@@ -46,8 +53,8 @@ paths:
             application/json:
               schema:
                 type: string
-
-    post:
+  "/api/v1/payment/{paymentID}":
+     post:
       description: Send a payment based on a payment id (the identifier for an payment) and receive a PaymentACK in response to a successful Payment.
       summary: Submit an Payment message including the transcation(s) along with other information that is validated before being broadcast to the network.
       tags:
@@ -93,7 +100,6 @@ paths:
             application/json:
               schema:
                 type: string
-
 servers:
   - url: //localhost:8445
 components:
