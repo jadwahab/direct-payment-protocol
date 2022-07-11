@@ -27,20 +27,13 @@ paths:
           schema:
             type: string
       responses:
-        "201":
+        "200":
           description: contains outputs, beneficiary data and expiry information, used by the
             payee to construct a transaction
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/dpp.PaymentTerms"
-        "400":
-          description: returned if the sender input is invalid, usually an issue with the
-            paymentID
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/server.ClientError"
         "404":
           description: returned if the paymentID has not been found
           content:
@@ -165,7 +158,7 @@ components:
           description: ISO timestamp
           example: 2019-10-12T07:20:50.52Z
           type: string
-        url:
+        paymentUrl:
           description: Secure HTTPS location where a Payment message should be sent. Maximum length is 4000 characters
           example: https://localhost:3443/api/v1/payment/123456
           type: string
@@ -209,10 +202,10 @@ components:
     dpp.Payment:
       type: object
       properties:
-        mode:
+        modeId:
           description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
-        50a57d5b03d9:
+        mode:
           $ref: "#/components/schemas/pm.Legacy-Payment"
         originator:
           nullable: true
@@ -233,10 +226,10 @@ components:
 
     dpp.PaymentACK:
       properties:
-        mode:
+        modeId:
           description: Selects from dictionary of options within PaymentTerms.requirements
           type: string
-        50a57d5b03d9:
+        mode:
           $ref: "#/components/schemas/pm.Legacy-PaymentAck"
         peer_channel:
           nullable: true
