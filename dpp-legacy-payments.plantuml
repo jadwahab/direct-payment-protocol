@@ -1,0 +1,35 @@
+@startuml
+
+hide footbox
+title DPP Flow (legacy payments)
+
+actor Sender
+actor Receiver
+collections Indexer
+participant Node
+
+note over Sender: Sender wants to buy something from Receiver
+
+autonumber
+Receiver->Indexer ++: Request API key (on startup)
+return API key
+Sender-->Receiver: create basket of goods
+Receiver->Receiver: click\n'generate new receive address'
+Receiver->Receiver: create invoice (X satoshis, etc.)\n+ DPP Payment Terms
+Receiver->Receiver: display address
+
+Receiver->Indexer: address + payURL
+
+Receiver-->Sender: obtain address
+Sender->Sender: build tx
+Sender->Node: broadcast tx
+
+Indexer<->Node: scan blockchain
+Indexer->Indexer: find tx with UTXO to address
+Indexer->Receiver: send tx to DPP payURL
+
+== first-time use free ==
+
+Receiver->Indexer: top up API key
+
+@enduml
